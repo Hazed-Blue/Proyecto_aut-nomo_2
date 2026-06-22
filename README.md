@@ -34,6 +34,7 @@ Sigue estos pasos para clonar el repositorio y ejecutar el juego en tu máquina 
 ### 1. Clonar el Repositorio
 Abre tu terminal o símbolo del sistema y ejecuta el siguiente comando:
 ```bash
+
 git clone [https://github.com/Hazed-Blue/Proyecto_aut-nomo_2.git]
 
 cd ahorcado-game-python
