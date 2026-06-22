@@ -1,61 +1,58 @@
 
 from palabras import obtener_palabra_aleatoria
+import logica_juego as lj  # Importamos la capa de negocio
 
-def inicializar_tablero(palabra):
-    """Inicializa el estado visual con guiones bajos."""
-    return ["_"] * len(palabra)
+def mostrar_pantalla(tablero, vidas, letras_intentadas):
+    """Componente puro de Presentación."""
+    print("\n" + "="*40)
+    print(f" Palabra a adivinar:  {' '.join(tablero)}")
+    print(f" Vidas restantes:     {vidas}")
+    print(f" Letras intentadas:   {', '.join(letras_intentadas)}")
+    print("="*40)
 
-def mostrar_estado(tablero, vidas, letras_intentadas):
-    """Componente de la Capa de Presentación: Muestra el estado actual en consola."""
-    print("\n" + "="*30)
-    print(f"Palabra a adivinar: {' '.join(tablero)}")
-    print(f"Vidas restantes: {vidas}")
-    print(f"Letras intentadas: {', '.join(letras_intentadas)}")
-    print("="*30)
-
-def jugar_ahorcado():
-    # --- Inicialización de variables de estado ---
+def ejecutar_partida():
+    # Inicialización de datos usando la capa de negocio
     palabra_secreta = obtener_palabra_aleatoria()
-    tablero = inicializar_tablero(palabra_secreta)
+    tablero = lj.inicializar_tablero(palabra_secreta)
     vidas = 6
     letras_intentadas = []
     
-    print("¡Bienvenido al Juego del Ahorcado!")
+    print("--- ¡BIENVENIDO AL JUEGO DEL AHORCADO MODULARIZADO! ---")
     
-    # --- Estructura Repetitiva Principal (Bucle Controlado por Estado) ---
-    while vidas > 0 and "_" in tablero:
-        mostrar_estado(tablero, vidas, letras_intentadas)
+    estado = "JUGANDO"
+    
+    # Bucle principal controlado por la lógica de negocio
+    while estado == "JUGANDO":
+        mostrar_pantalla(tablero, vidas, letras_intentadas)
+        letra_ingresada = input("Introduce una letra: ")
         
-        # Captura de entrada del usuario
-        letra = input("Ingresa una letra: ").upper().strip()
-        
-        # Validaciones de control de entrada
-        if len(letra) != 1 or not letra.isalpha():
-            print("Error: Por favor, ingresa únicamente una sola letra.")
+        # 1. Validar la entrada (Capa de Negocio)
+        validacion = lj.validar_entrada(letra_ingresada, letras_intentadas)
+        if not validacion["valido"]:
+            print(f"⚠️  {validacion['motivo']}")
             continue
             
-        if letra in letras_intentadas:
-            print(f"Ya habías intentado la letra '{letra}'. Prueba con otra.")
-            continue
-            
-        letras_intentadas.append(letra)
+        # Registrar el intento
+        letra_limpia = letra_ingresada.upper().strip()
+        letras_intentadas.append(letra_limpia)
         
-        # --- Estructura Condicional: Verificación Lógica del Carácter ---
-        if letra in palabra_secreta:
-            print(f"¡Excelente! La letra '{letra}' es correcta.")
-            # Actualización indexada de la palabra
-            for posicion, caracter in enumerate(palabra_secreta):
-                if caracter == letra:
-                    tablero[posicion] = letra
+        # 2. Procesar el intento (Capa de Negocio)
+        es_correcto = lj.procesar_intento(letra_limpia, palabra_secreta, tablero)
+        
+        if es_correcto:
+            print(f"¡Buen trabajo! La letra '{letra_limpia}' es correcta.")
         else:
-            print(f"Incorrecto. La letra '{letra}' no está en la palabra.")
-            vidas -= 1  # Decremento lineal de recursos (vidas)
-
-    # --- Evaluación de Estados Terminales ---
-    if "_" not in tablero:
-        print(f"\n¡Felicidades! Ganaste. La palabra era: {palabra_secreta}")
+            print(f"¡Oh no! La letra '{letra_limpia}' no se encuentra.")
+            vidas -= 1
+            
+        # 3. Actualizar y evaluar estado terminal (Capa de Negocio)
+        estado = lj.comprobar_estado_terminal(tablero, vidas)
+        
+    # Salida del bucle: Fin de la partida
+    if estado == "VICTORIA":
+        print(f"\n🎉 ¡FELICIDADES! Has ganado. La palabra era: {palabra_secreta}")
     else:
-        print(f"\nGame Over. Te has quedado sin vidas. La palabra era: {palabra_secreta}")
+        print(f"\n💀 GAME OVER. Te has quedado sin vidas. La palabra era: {palabra_secreta}")
 
 if __name__ == "__main__":
-    jugar_ahorcado()
+    ejecutar_partida()
