@@ -1,4 +1,3 @@
-# logica_juego.py
 
 """
 Capa de Negocio (Controlador / Reglas del Juego).
