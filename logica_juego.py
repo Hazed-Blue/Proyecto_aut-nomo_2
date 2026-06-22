@@ -48,7 +48,6 @@ def procesar_intento(letra, palabra_secreta, tablero_actual):
             
     return acierto
 
-
 def comprobar_estado_terminal(tablero, vidas):
     """
     Analiza las variables de control para verificar si el juego ha terminado.
