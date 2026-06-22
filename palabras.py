@@ -8,3 +8,4 @@ def obtener_palabra_aleatoria():
     """
     banco_palabras = ["ALGORITMO", "PYTHON", "INGENIERIA", "SOFTWARE", "DIAGRAMA", "VARIABLE"]
     return random.choice(banco_palabras)
+    
